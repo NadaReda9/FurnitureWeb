@@ -1,0 +1,97 @@
+/* Products Section */
+.products-section {
+    background-color: #1B0708;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.products-title {
+    color: #f8f8f8; 
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    font-family: 'Arial', sans-serif;
+}
+
+.search-box {
+    display: block;
+    margin: 0 auto 30px;
+    padding: 10px 16px;
+    width: 80%;
+    max-width: 400px;
+    border: 2px solid rgb(212, 175, 55);
+    border-radius: 10px;
+    background-color: bisque;
+    color: #1B0708;
+    font-size: 16px;
+}
+
+.products-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.product-item {
+    background-color: rgba(255, 228, 196, 0.2); 
+    border: 1px solid rgb(212, 175, 55);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    color: white;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+}
+.product-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgb(212, 175, 55);
+}
+
+.product-item img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.product-item h2 {
+    color:rgb(93, 21, 21); 
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.product-item p {
+    font-size: 14px;
+    color:rgb(93, 21, 21) ;
+}
+
+.add-to-cart {
+    background-color: rgb(212, 175, 55);
+    color: #1B0708;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.add-to-cart:hover {
+    background-color: bisque;
+    color: #1B0708;
+}
+.loader {
+    border: 6px solid #f3f3f3; /* رمادي فاتح */
+    border-top: 6px solid #D4AF37; /* ذهبي */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 50px auto;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
