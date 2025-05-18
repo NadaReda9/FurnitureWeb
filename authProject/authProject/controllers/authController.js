@@ -20,18 +20,41 @@ exports.signup = async (req, res) => {
         const hashPassword = await doHash(password, 12);
         const newUser = new User({ email, name, password: hashPassword });
         const result = await newUser.save();
+
+
+        const token = jwt.sign(
+            {
+                userId: result._id,
+                email: result.email,
+                verified: result.verified,
+            },
+            process.env.TOKEN_SECRET
+        );
+
         result.password = undefined;
 
-        return res.status(201).json({
-            success: true,
-            message: "Your account has been created successfully",
-            result,
-        });
+        // Send token and user info
+        return res
+            .cookie('Authorization', 'Bearer ' + token, {
+                expires: new Date(Date.now() + 8 * 3600000),
+                httpOnly: process.env.NODE_ENV === 'production',
+                secure: process.env.NODE_ENV === 'production',
+            })
+            .status(201)
+            .json({
+                success: true,
+                message: "Your account has been created successfully",
+                token,
+                userId: result._id,
+                name: result.name
+            });
+
     } catch (error) {
         console.error("Signup Error:", error);
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
 
 exports.signin = async (req, res) => {
     const { email, password } = req.body;
@@ -66,7 +89,7 @@ exports.signin = async (req, res) => {
                 httpOnly: process.env.NODE_ENV === 'production',
                 secure: process.env.NODE_ENV === 'production',
             })
-            .json({ success: true, token, message: "Logged in successfully" });
+            .json({ success: true, token,userId: existingUser._id,name: existingUser.name, message: "Logged in successfully" });
     } catch (error) {
         console.error("Signin Error:", error);
         return res.status(500).json({ success: false, message: 'Internal server error' });

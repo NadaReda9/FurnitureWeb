@@ -20,7 +20,25 @@ import Logout from './Components/Logout/Logout'
 import ProductDetails from './Components/ProductDetails/ProductDetails'
 import Feedback from './Components/Feedback/Feedback'
 
+
+
+import {getOrCreateGuestId} from './utils/guestId';
+
+
+
+
+
+
+
+
+
 function App() {
+
+
+  getOrCreateGuestId();
+
+
+
   let routes = createBrowserRouter([
     {
       path: "",

@@ -14,6 +14,8 @@ export default function Logout() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('username');
     setIsLoggedIn(false);
     setShowSidebar(false);
     window.location.href = '/login';

@@ -21,10 +21,14 @@ export default function Login() {
       try {
         const response = await axios.post('http://localhost:8000/api/auth/signin', values);
         if (response.data.success) {
+          console.log('Login response data:', response.data);
           localStorage.setItem("token", response.data.token);
+          localStorage.setItem("userId", response.data.userId);
           localStorage.setItem("username",response.data.name)
-          setStatus({ success: response.data.message });
           navigate('/'); 
+          window.location.reload();
+          setStatus({ success: response.data.message });
+          
         } else {
           setStatus({ error: "Login failed" });
         }

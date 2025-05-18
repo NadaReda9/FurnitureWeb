@@ -21,7 +21,7 @@ export default function Layout() {
         toastClassName="bg-neutral-100 text-[#270708] border border-[#270708] shadow"
         progressClassName="bg-[#270708]"
         position="top-right"
-        autoClose={5000}
+        autoClose={8000}
         hideProgressBar={false}
         newestOnTop
         closeOnClick

@@ -1,54 +1,80 @@
-import React, { useEffect, useState } from 'react';
+import{ Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-import './shop.css';
+
 
 const CartPage = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token");
+
+  const token = localStorage.getItem('token');
   const userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
+  const guestId = localStorage.getItem('guestId') || null;
 
-  const authHeader = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
-  };
 
-  const fetchCart = async () => {
-    try {
-      const res = await axios.get(`http://localhost:8000/api/cart/${userId}`, authHeader);
-      setCart(res.data.items || []);
-    } catch (err) {
-      console.error('Failed to fetch cart:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
+  
+  
+
+  // Setup headers including auth if token exists
+  const headers = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  // Fetch cart items from backend
+
+const fetchCart = async () => {
+  try {
+    
+    const params = {};
+    if (userId) params.userId = userId;
+    if (guestId) params.guestId = guestId;
+
+    const res = await axios.get('http://localhost:8000/api/cart', { headers, params });
+    setCart(res.data.items || []);
+    console.log("Cart items:", res.data.items);
+    console.log("User ID:", userId);
+    console.log("Guest ID:", guestId);
+  } catch (err) {
+    console.error('Failed to fetch cart:', err);
+  }
+  finally {
+    setLoading(false);
+  }
+};
+
+
+  useEffect(() => {
+    fetchCart();
+  }, [userId, guestId]);
+
+  //update cart items
   const updateQuantity = async (productId, quantity) => {
     try {
-      await axios.put(`http://localhost:8000/api/cart/${userId}/update`, { productId, quantity }, authHeader);
+      await axios.put('http://localhost:8000/api/cart/update', {userId,guestId,productId,quantity}, { headers });
       fetchCart();
     } catch (err) {
       console.error('Failed to update item:', err);
     }
-  };
+  }
 
+  //remove cart items
   const removeItem = async (productId) => {
     try {
-      await axios.delete(`http://localhost:8000/api/cart/${userId}/remove/${productId}`, authHeader);
+      await axios.delete(`http://localhost:8000/api/cart/remove`, { data: { userId, guestId, productId }, headers });
       fetchCart();
     } catch (err) {
       console.error('Failed to remove item:', err);
     }
   };
 
+  //clear cart items
   const clearCart = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/cart/${userId}/clear`, authHeader);
-      setCart([]); 
-      fetchCart(); 
+      await axios.delete(`http://localhost:8000/api/cart/clear`, { data: { userId, guestId }, headers });
+      setCart([]);
+      fetchCart();
     } catch (err) {
       console.error("Failed to clear cart:", err);
     }
@@ -60,6 +86,21 @@ const CartPage = () => {
       return total + price * item.quantity;
     }, 0);
   };
+
+  const checkout = async () => {
+    try {
+      if (!userId) {
+        console.log("User not logged in. Redirecting to login page...");
+      }
+      else {
+        console.log("Proceeding to checkout...");
+      }
+  }
+    catch (err) {
+      console.error('Failed to proceed to checkout:', err);
+    }
+  };
+
 
   useEffect(() => {
     if (userId && token) {
@@ -77,7 +118,7 @@ const CartPage = () => {
     );
   }
 
-  return (
+    return (
     <div className="min-h-screen main_color2">
       <div className="cart-page py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
@@ -93,7 +134,7 @@ const CartPage = () => {
               </p>
               <Link
                 to="/product"
-                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300"
+                className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-300" style={{backgroundColor: "#270708", color: "#fff"}}
               >
                 Continue Shopping
               </Link>
@@ -101,8 +142,8 @@ const CartPage = () => {
           ) : (
             <>
               <div className="divide-y divide-gray-200">
-                {cart.map(item => (
-                  <div key={item.productId._id} className="py-4 flex flex-col sm:flex-row items-center">
+                {cart.map((item, index) => (
+                  <div key={`${item.productId._id}-${index}`} className="py-4 flex flex-col sm:flex-row items-center">
                     <img 
                       className="w-24 h-24 object-cover rounded-lg mr-4 mb-4 sm:mb-0" 
                       src={item.productId.imageUrl} 
@@ -153,6 +194,7 @@ const CartPage = () => {
                     Clear Cart
                   </button>
                   <button 
+                    onClick={checkout}
                     className="px-6 py-2 main_color text-white rounded-md  transition-colors"
                   >
                     Proceed to Checkout

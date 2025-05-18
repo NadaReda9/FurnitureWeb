@@ -5,6 +5,7 @@ import { FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { Link, NavLink } from 'react-router-dom';
 
+
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +14,7 @@ const Products = () => {
   const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products')
+    fetch('http://localhost:8000/api/products')
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to fetch products');
@@ -36,6 +37,7 @@ const Products = () => {
 
   const token = localStorage.getItem("token");
   const userId = token ? JSON.parse(atob(token.split('.')[1])).userId : null;
+  const guestId = localStorage.getItem("guestId");
 
   const authHeader = {
     headers: {
@@ -43,31 +45,40 @@ const Products = () => {
     }
   };
 
+  /////////////////
+  // Add to cart function
   const addToCart = async (productId) => {
+    
+    console.log("Guest ID:", guestId);
+    console.log("User ID:", userId);
+    
+    const cartData = {
+      userId: userId || null,
+      guestId: guestId || null,
+      productId: productId,
+      quantity: 1
+    };
+
     try {
-      await axios.post(
-        `http://localhost:5000/api/cart/${userId}/add`,
-        { productId, quantity: 1 },
-        authHeader
-      );
-
-      toast(
-        <span>
-          Item added to cart!{" "}
-          <Link to="/shop" className="underline text-[#270708] font-semibold">
-            Go to Cart
-          </Link>
-        </span>,
-        {
-          icon: true,
-        }
-      );
-    } catch (err) {
-      console.error("Error adding to cart:", err);
-      toast.error("❌ Failed to add to cart");
+      const res = await axios.post('http://localhost:8000/api/cart/add', cartData, authHeader);
+      toast.success(
+              <span>
+                Item added to cart!{" "}
+                <Link to="/shop" className="underline text-[#270708] font-semibold" >
+                  Go to Cart
+                </Link>
+              </span>,
+              {
+                icon: true,
+                autoClose: 2000
+              }
+            );
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
     }
-  };
-
+  }
+  /////////////
   if (loading) return <div className="loader"></div>;
   if (error) return <div>An error occurred: {error}</div>;
 
