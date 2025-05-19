@@ -10,6 +10,7 @@ import { FiDollarSign } from "react-icons/fi";
 import { MdOutlinePolicy } from "react-icons/md";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -34,6 +35,7 @@ export default function Home() {
 
   const token = localStorage.getItem("token");
   const userId = token ? JSON.parse(atob(token.split(".")[1])).userId : null;
+  const guestId = localStorage.getItem("guestId");
   const authHeader = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -41,27 +43,36 @@ export default function Home() {
   };
 
   const addToCart = async (productId) => {
-    try {
-      await axios.post(
-        `http://localhost:8000/api/cart/${userId}/add`,
-        { productId, quantity: 1 },
-        authHeader
-      );
+    
+    console.log("Guest ID:", guestId);
+    console.log("User ID:", userId);
+    
+    const cartData = {
+      userId: userId || null,
+      guestId: guestId || null,
+      productId: productId,
+      quantity: 1
+    };
 
-      toast(
-        <span>
-          Item added to cart!{" "}
-          <Link to="/shop" className="underline text-[#270708] font-semibold">
-            Go to Cart
-          </Link>
-        </span>,
-        { icon: true }
-      );
-    } catch (err) {
-      console.error("Error adding to cart:", err);
-      toast.error("❌ Failed to add to cart");
+    try {
+      const res = await axios.post('http://localhost:8000/api/cart/add', cartData, authHeader);
+      toast.success(
+              <span>
+                Item added to cart!{" "}
+                <Link to="/shop" className="underline text-[#270708] font-semibold" >
+                  Go to Cart
+                </Link>
+              </span>,
+              {
+                icon: true,
+                autoClose: 2000
+              }
+            );
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add to cart");
     }
-  };
+  }
 
   return (
     <>
