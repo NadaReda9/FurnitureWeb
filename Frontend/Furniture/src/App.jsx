@@ -20,6 +20,9 @@ import Logout from './Components/Logout/Logout'
 import ProductDetails from './Components/ProductDetails/ProductDetails'
 import Feedback from './Components/Feedback/Feedback'
 
+import CheckoutPage from './Components/checkout/checkout'
+import PaymentPage from './Components/payment/payment'
+
 
 
 import {getOrCreateGuestId} from './utils/guestId';
@@ -67,7 +70,9 @@ function App() {
         { path: "logout", element: <Logout /> },
         { path: "productDetails/:id", element: <ProductDetails /> },
 
-        { path: "logout", element: <Logout /> }
+        { path: "logout", element: <Logout /> },
+        { path: "checkout", element: <CheckoutPage /> },
+        { path: "payment", element: <PaymentPage /> }
 
       ]
     }

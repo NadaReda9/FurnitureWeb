@@ -1,9 +1,12 @@
 import{ Link } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 
 const CartPage = () => {
+  const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -90,14 +93,29 @@ const fetchCart = async () => {
   const checkout = async () => {
     try {
       if (!userId) {
-        console.log("User not logged in. Redirecting to login page...");
-      }
-      else {
-        console.log("Proceeding to checkout...");
-      }
+        toast(
+  <span className="text-[#270708] font-semibold">
+    YOU HAVE TO{" "}
+    <Link to="/signup" className="underline text-[#270708] font-bold">
+      SIGN UP FIRST!
+    </Link>
+  </span>,
+  {
+    icon: "⚠️",
+    style: {
+      backgroundColor: "#fff8dc", // sandy beige background
+      color: "#270708",
+      borderLeft: "6px solid #270708",
+    },
+    progressClassName: "marbella-progress-bar", // custom progress bar class
   }
-    catch (err) {
-      console.error('Failed to proceed to checkout:', err);
+);
+
+      } else {
+        navigate("/checkout", { state: { cart } });
+      }
+    } catch (err) {
+      console.error("Failed to proceed to checkout:", err);
     }
   };
 
@@ -199,6 +217,20 @@ const fetchCart = async () => {
                   >
                     Proceed to Checkout
                   </button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 </div>
               </div>
             </>
